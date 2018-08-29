@@ -21,12 +21,16 @@ class Controller {
         $res = CommonClass::createNewSalon($this->request);
         return $res;
     }
+    
+    function addBranch(){
+        
+    }
 
 }
 
 try {
     $req = CommonClass::getRequestVariables();
-    $action = $req["action"];
+    $action = filter_input(INPUT_GET,'action');
     $conroller = new Controller($req);
     $response = call_user_func(array($conroller, $action));
     echo CommonClass::setApiResponse($response);

@@ -1,29 +1,48 @@
 <?php
 
 include 'MySqlClass.php';
+include 'MongoDbClass.php';
 
 class CommonClass {
 
     public static function createNewSalon($param) {
-        $insertParam["tableName"] = "saloon_details";
-        $insertParam["insertData"] = $param;
-        $res = MySqlClass::MysqlInsert($insertParam);
+        print_r($param);
+        $insertParam["collectionName"] = "salon";
+        $insertParam["data"] = $param;
+        $res = MongoDbClass::MongoInsertOne($insertParam);
         if ($res) {
             return array("msgType" => "Saloon created.");
         }
     }
 
+    public static function addNewBranch($param) {
+        $salonId = $param["salonId"];
+        unset($param["salonId"]);
+        $updateParam["collectionName"] = "salon";
+        $updateParam["updateFields"] = array('$set' => array("branch" => $param));
+        $updateParam["whereCondition"] = array("s_id" => $salonId);
+        $updateRes = MongoDbClass::mongoUpdateOne($updateParam);
+        if ($updateRes) {
+            return array("msgType" => "Branch added.");
+        }
+    }
+
     public static function salonList($param) {
         $id = empty($param["s_id"]) ? "all" : $param["s_id"];
-
-        $selectParam["table"] = "saloon_details";
-        $selectParam["column"] = "*";
-        $where = "";
+        $where = array();
         if ($id != "all") {
-            $where = "s_id = " . $id;
+            $where["s_id"] = $id;
         }
-        $selectParam["where"] = $where;
-        $salonData = MySqlClass::MysqlSelect($selectParam);
+        $selectParam["collectionName"] = "salon";
+        $selectParam["selectFields"] = array('_id' => 0);
+        $selectParam["whereCondition"] = $where;
+        $cursor = MongoDbClass::MongoSelect($selectParam);
+        $salonData = array();
+        if (!empty($cursor)) {
+            foreach ($cursor as $document) {
+                $salonData[] = $document;
+            }
+        }
         unset($selectParam);
         return $salonData;
     }
@@ -43,12 +62,14 @@ class CommonClass {
     public static function getRequestVariables() {
         $httpMethod = filter_input(INPUT_SERVER, "REQUEST_METHOD");
         $data = array();
+        echo $httpMethod;
         switch ($httpMethod) {
             case "GET":
                 $data = filter_input_array(INPUT_GET);
                 break;
             case "POST":
-                $data = filter_input_array(INPUT_POST);
+            case "PUT":
+                $data = json_decode(file_get_contents('php://input'), TRUE);
                 break;
         }
         return $data;
