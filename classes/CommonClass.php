@@ -6,7 +6,6 @@ include 'MongoDbClass.php';
 class CommonClass {
 
     public static function createNewSalon($param) {
-        print_r($param);
         $insertParam["collectionName"] = "salon";
         $insertParam["data"] = $param;
         $res = MongoDbClass::MongoInsertOne($insertParam);
@@ -19,7 +18,7 @@ class CommonClass {
         $salonId = $param["salonId"];
         unset($param["salonId"]);
         $updateParam["collectionName"] = "salon";
-        $updateParam["updateFields"] = array('$set' => array("branch" => $param));
+        $updateParam["updateFields"] = array('$push' => array("branch" => $param));
         $updateParam["whereCondition"] = array("s_id" => $salonId);
         $updateRes = MongoDbClass::mongoUpdateOne($updateParam);
         if ($updateRes) {
@@ -62,7 +61,6 @@ class CommonClass {
     public static function getRequestVariables() {
         $httpMethod = filter_input(INPUT_SERVER, "REQUEST_METHOD");
         $data = array();
-        echo $httpMethod;
         switch ($httpMethod) {
             case "GET":
                 $data = filter_input_array(INPUT_GET);
