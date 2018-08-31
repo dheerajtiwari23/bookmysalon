@@ -27,6 +27,31 @@ class Controller {
         return $res;
     }
 
+    function updateBranch() {
+        $res = CommonClass::updateBranchData($this->request);
+        return $res;
+    }
+
+    function addService() {
+        $res = CommonClass::addBranchServices($this->request);
+        return $res;
+    }
+
+    function updateService() {
+        $res = CommonClass::updateBranchServiceData($this->request);
+        return $res;
+    }
+
+    function getBranchList() {
+        $res = CommonClass::saloonBranchList($this->request);
+        return $res;
+    }
+
+    function getServiceList() {
+        $res = CommonClass::branchServiceList($this->request);
+        return $res;
+    }
+
 }
 
 try {

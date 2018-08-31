@@ -60,7 +60,7 @@ class MongoDbClass {
                 $options["sort"] = $param["sort"];
             }
             $collection = MongoDbClass::getCollection($collectionName);
-            $cursor = $collection->find($whereCondition, $selectFields);
+            $cursor = $collection->find($whereCondition, array("projection" => $selectFields));
             return $cursor;
         } catch (Exception $ex) {
             echo $ex->getMessage();
@@ -74,7 +74,7 @@ class MongoDbClass {
             $selectFields = $param["selectFields"];
             $whereCondition = $param["whereCondition"];
             $collection = MongoDbClass::getCollection($collectionName);
-            $cursor = $collection->findOne($whereCondition, $selectFields);
+            $cursor = $collection->findOne($whereCondition, array("projection" => $selectFields));
             return $cursor;
         } catch (Exception $ex) {
             echo $ex->getMessage();
